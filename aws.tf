@@ -53,7 +53,7 @@ resource "aws_instance" "mozart" {
   }
 
   provisioner "file" {
-    source      = "${file(var.private_key_file)}"
+    source      = "${var.private_key_file}"
     destination = ".ssh/${basename(var.private_key_file)}"
   }
 
