@@ -54,7 +54,7 @@ resource "aws_instance" "mozart" {
 
   provisioner "remote-exec" {
     inline = [
-      "sudo pip install -y awscli",
+      "sudo yum install -y awscli",
       "sudo mkfs.xfs ${var.mozart["persist_dev"]}",
       "sudo bash -c \"echo ${lookup(var.mozart, "persist_dev_mount", var.mozart["persist_dev"])} ${var.mozart["persist"]} auto defaults,nofail,comment=terraform 0 2 >> /etc/fstab\"",
       "sudo mkdir -p ${var.mozart["persist"]}",
@@ -133,7 +133,7 @@ resource "aws_instance" "metrics" {
 
   provisioner "remote-exec" {
     inline = [
-      "sudo pip install -y awscli",
+      "sudo yum install -y awscli",
       "sudo mkfs.xfs ${var.metrics["persist_dev"]}",
       "sudo bash -c \"echo ${lookup(var.metrics, "persist_dev_mount", var.metrics["persist_dev"])} ${var.metrics["persist"]} auto defaults,nofail,comment=terraform 0 2 >> /etc/fstab\"",
       "sudo mkdir -p ${var.metrics["persist"]}",
@@ -212,7 +212,7 @@ resource "aws_instance" "grq" {
 
   provisioner "remote-exec" {
     inline = [
-      "sudo pip install -y awscli",
+      "sudo yum install -y awscli",
       "sudo mkfs.xfs ${var.grq["persist_dev"]}",
       "sudo bash -c \"echo ${lookup(var.grq, "persist_dev_mount", var.grq["persist_dev"])} ${var.grq["persist"]} auto defaults,nofail,comment=terraform 0 2 >> /etc/fstab\"",
       "sudo mkdir -p ${var.grq["persist"]}",
@@ -273,7 +273,7 @@ resource "aws_instance" "factotum" {
 
   provisioner "remote-exec" {
     inline = [
-      "sudo pip install -y awscli",
+      "sudo yum install -y awscli",
       "mkdir -p ~/.aws",
       "chmod 700 ~/.aws",
       "bash -c \"echo [default] > ~/.aws/credentials\"",
@@ -328,7 +328,7 @@ resource "aws_instance" "ci" {
 
   provisioner "remote-exec" {
     inline = [
-      "sudo pip install -y awscli",
+      "sudo yum install -y awscli",
       "mkdir -p ~/.aws",
       "chmod 700 ~/.aws",
       "bash -c \"echo [default] > ~/.aws/credentials\"",
@@ -383,7 +383,7 @@ resource "aws_instance" "autoscale" {
 
   provisioner "remote-exec" {
     inline = [
-      "sudo pip install -y awscli",
+      "sudo yum install -y awscli",
       "mkdir -p ~/.aws",
       "chmod 700 ~/.aws",
       "bash -c \"echo [default] > ~/.aws/credentials\"",
