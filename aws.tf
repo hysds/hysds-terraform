@@ -77,6 +77,18 @@ resource "aws_instance" "mozart" {
       "bash -c \"echo [default] > ~/.aws/config\"",
       "bash -c \"echo region = ${var.region} >> ~/.aws/config\"",
       "chmod 600 ~/.aws/config",
+      "virtualenv --system-site-packages ~/mozart",
+      "source ~/mozart/bin/activate",
+      "pip install -U pip",
+      "pip install -U setuptools",
+      "mkdir -p ~/mozart/etc",
+      "mkdir -p ~/mozart/log",
+      "mkdir -p ~/mozart/run",
+      "mkdir -p ~/mozart/ops",
+      "bash -c \"echo >> ~/.bash_profile\"",
+      "bash -c \"echo '# source virtualenv' >> ~/.bash_profile\"",
+      "bash -c \"echo export MOZART_DIR=$HOME/mozart >> ~/.bash_profile\"",
+      "bash -c \"echo source $MOZART_DIR/bin/activate >> ~/.bash_profile\""
     ]
   }
 
@@ -184,7 +196,19 @@ resource "aws_instance" "metrics" {
       "chmod 600 ~/.aws/credentials",
       "bash -c \"echo [default] > ~/.aws/config\"",
       "bash -c \"echo region = ${var.region} >> ~/.aws/config\"",
-      "chmod 600 ~/.aws/config"
+      "chmod 600 ~/.aws/config",
+      "virtualenv --system-site-packages ~/metrics",
+      "source ~/metrics/bin/activate",
+      "pip install -U pip",
+      "pip install -U setuptools",
+      "mkdir -p ~/metrics/etc",
+      "mkdir -p ~/metrics/log",
+      "mkdir -p ~/metrics/run",
+      "mkdir -p ~/metrics/ops",
+      "bash -c \"echo >> ~/.bash_profile\"",
+      "bash -c \"echo '# source virtualenv' >> ~/.bash_profile\"",
+      "bash -c \"echo export METRICS_DIR=$HOME/metrics >> ~/.bash_profile\"",
+      "bash -c \"echo source $METRICS_DIR/bin/activate >> ~/.bash_profile\""
     ]
   }
 }
@@ -263,7 +287,19 @@ resource "aws_instance" "grq" {
       "chmod 600 ~/.aws/credentials",
       "bash -c \"echo [default] > ~/.aws/config\"",
       "bash -c \"echo region = ${var.region} >> ~/.aws/config\"",
-      "chmod 600 ~/.aws/config"
+      "chmod 600 ~/.aws/config",
+      "virtualenv --system-site-packages ~/sciflo",
+      "source ~/sciflo/bin/activate",
+      "pip install -U pip",
+      "pip install -U setuptools",
+      "mkdir -p ~/sciflo/etc",
+      "mkdir -p ~/sciflo/log",
+      "mkdir -p ~/sciflo/run",
+      "mkdir -p ~/sciflo/ops",
+      "bash -c \"echo >> ~/.bash_profile\"",
+      "bash -c \"echo '# source virtualenv' >> ~/.bash_profile\"",
+      "bash -c \"echo export SCIFLO_DIR=$HOME/sciflo >> ~/.bash_profile\"",
+      "bash -c \"echo source $SCIFLO_DIR/bin/activate >> ~/.bash_profile\""
     ]
   }
 }
@@ -318,7 +354,19 @@ resource "aws_instance" "factotum" {
       "chmod 600 ~/.aws/credentials",
       "bash -c \"echo [default] > ~/.aws/config\"",
       "bash -c \"echo region = ${var.region} >> ~/.aws/config\"",
-      "chmod 600 ~/.aws/config"
+      "chmod 600 ~/.aws/config",
+      "virtualenv --system-site-packages ~/verdi",
+      "source ~/verdi/bin/activate",
+      "pip install -U pip",
+      "pip install -U setuptools",
+      "mkdir -p ~/verdi/etc",
+      "mkdir -p ~/verdi/log",
+      "mkdir -p ~/verdi/run",
+      "mkdir -p ~/verdi/ops",
+      "bash -c \"echo >> ~/.bash_profile\"",
+      "bash -c \"echo '# source virtualenv' >> ~/.bash_profile\"",
+      "bash -c \"echo export VERDI_DIR=$HOME/verdi >> ~/.bash_profile\"",
+      "bash -c \"echo source $VERDI_DIR/bin/activate >> ~/.bash_profile\""
     ]
   }
 }
@@ -373,7 +421,19 @@ resource "aws_instance" "ci" {
       "chmod 600 ~/.aws/credentials",
       "bash -c \"echo [default] > ~/.aws/config\"",
       "bash -c \"echo region = ${var.region} >> ~/.aws/config\"",
-      "chmod 600 ~/.aws/config"
+      "chmod 600 ~/.aws/config",
+      "virtualenv --system-site-packages ~/verdi",
+      "source ~/verdi/bin/activate",
+      "pip install -U pip",
+      "pip install -U setuptools",
+      "mkdir -p ~/verdi/etc",
+      "mkdir -p ~/verdi/log",
+      "mkdir -p ~/verdi/run",
+      "mkdir -p ~/verdi/ops",
+      "bash -c \"echo >> ~/.bash_profile\"",
+      "bash -c \"echo '# source virtualenv' >> ~/.bash_profile\"",
+      "bash -c \"echo export VERDI_DIR=$HOME/verdi >> ~/.bash_profile\"",
+      "bash -c \"echo source $VERDI_DIR/bin/activate >> ~/.bash_profile\""
     ]
   }
 }
@@ -428,7 +488,19 @@ resource "aws_instance" "autoscale" {
       "chmod 600 ~/.aws/credentials",
       "bash -c \"echo [default] > ~/.aws/config\"",
       "bash -c \"echo region = ${var.region} >> ~/.aws/config\"",
-      "chmod 600 ~/.aws/config"
+      "chmod 600 ~/.aws/config",
+      "virtualenv --system-site-packages ~/verdi",
+      "source ~/verdi/bin/activate",
+      "pip install -U pip",
+      "pip install -U setuptools",
+      "mkdir -p ~/verdi/etc",
+      "mkdir -p ~/verdi/log",
+      "mkdir -p ~/verdi/run",
+      "mkdir -p ~/verdi/ops",
+      "bash -c \"echo >> ~/.bash_profile\"",
+      "bash -c \"echo '# source virtualenv' >> ~/.bash_profile\"",
+      "bash -c \"echo export VERDI_DIR=$HOME/verdi >> ~/.bash_profile\"",
+      "bash -c \"echo source $VERDI_DIR/bin/activate >> ~/.bash_profile\""
     ]
   }
 }
