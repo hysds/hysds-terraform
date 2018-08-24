@@ -10,7 +10,7 @@ provider "aws" {
 ######################
 
 resource "aws_instance" "mozart" {
-  ami                    = "${var.mozart["ami"]}"
+  ami                    = "${var.ami}"
   instance_type          = "${var.mozart["instance_type"]}"
   key_name               = "${var.key_name}"
   availability_zone      = "${var.az}"
@@ -20,14 +20,20 @@ resource "aws_instance" "mozart" {
   subnet_id              = "${var.subnet_id}"
   vpc_security_group_ids = "${var.vpc_security_group_ids}"
   ebs_block_device {
+    device_name = "${var.mozart["docker_storage_dev"]}"
+    volume_size = "${var.mozart["docker_storage_dev_size"]}"
+    volume_type = "gp2"
+    delete_on_termination = true
+  }
+  ebs_block_device {
     device_name = "${var.mozart["data_dev"]}"
     volume_size = "${var.mozart["data_dev_size"]}"
     volume_type = "gp2"
     delete_on_termination = true
   }
   ebs_block_device {
-    device_name = "${var.mozart["data2_dev"]}"
-    volume_size = "${var.mozart["data2_dev_size"]}"
+    device_name = "${var.mozart["persist_dev"]}"
+    volume_size = "${var.mozart["persist_dev_size"]}"
     volume_type = "gp2"
     delete_on_termination = true
   }
@@ -44,29 +50,12 @@ resource "aws_instance" "mozart" {
 
   provisioner "remote-exec" {
     inline = [
-      "sudo mkfs.xfs ${var.mozart["data_dev"]}",
-      "sudo bash -c \"echo ${lookup(var.mozart, "data_dev_mount", var.mozart["data_dev"])} ${var.mozart["data"]} auto defaults,nofail,comment=terraform 0 2 >> /etc/fstab\"",
-      "sudo mkdir -p ${var.mozart["data"]}",
-      "sudo mount ${var.mozart["data"]}",
-      "sudo chown -R ops:ops ${var.mozart["data"]}",
-      "sudo mkfs.xfs ${var.mozart["data2_dev"]}",
-      "sudo bash -c \"echo ${lookup(var.mozart, "data2_dev_mount", var.mozart["data2_dev"])} ${var.mozart["data2"]} auto defaults,nofail,comment=terraform 0 2 >> /etc/fstab\"",
-      "sudo mkdir -p ${var.mozart["data2"]}",
-      "sudo mount ${var.mozart["data2"]}",
-      "sudo chown -R ops:ops ${var.mozart["data2"]}",
-      "sudo mkdir -p ${var.mozart["data"]}/var/lib",
-      "sudo systemctl stop elasticsearch",
-      "sudo systemctl stop redis",
-      "sudo systemctl stop rabbitmq-server",
-      "sudo mv /var/lib/elasticsearch ${var.mozart["data"]}/var/lib/",
-      "sudo ln -sf ${var.mozart["data"]}/var/lib/elasticsearch /var/lib/elasticsearch",
-      "sudo mv /var/lib/redis ${var.mozart["data"]}/var/lib/",
-      "sudo ln -sf ${var.mozart["data"]}/var/lib/redis /var/lib/redis",
-      "sudo mv /var/lib/rabbitmq ${var.mozart["data"]}/var/lib/",
-      "sudo ln -sf ${var.mozart["data"]}/var/lib/rabbitmq /var/lib/rabbitmq",
-      "sudo systemctl start elasticsearch",
-      "sudo systemctl start redis",
-      "sudo systemctl start rabbitmq-server"
+      "sudo mkfs.xfs ${var.mozart["persist_dev"]}",
+      "sudo bash -c \"echo ${lookup(var.mozart, "persist_dev_mount", var.mozart["persist_dev"])} ${var.mozart["persist"]} auto defaults,nofail,comment=terraform 0 2 >> /etc/fstab\"",
+      "sudo mkdir -p ${var.mozart["persist"]}",
+      "sudo mount ${var.mozart["persist"]}",
+      "sudo chown -R ops:ops ${var.mozart["persist"]}",
+      "sudo mkdir -p ${var.mozart["persist"]}/var/lib"
     ]
   }
 }
@@ -85,7 +74,7 @@ output "mozart_pub_ip" {
 ######################
 
 resource "aws_instance" "metrics" {
-  ami                    = "${var.metrics["ami"]}"
+  ami                    = "${var.ami}"
   instance_type          = "${var.metrics["instance_type"]}"
   key_name               = "${var.key_name}"
   availability_zone      = "${var.az}"
@@ -95,8 +84,20 @@ resource "aws_instance" "metrics" {
   subnet_id              = "${var.subnet_id}"
   vpc_security_group_ids = "${var.vpc_security_group_ids}"
   ebs_block_device {
+    device_name = "${var.metrics["docker_storage_dev"]}"
+    volume_size = "${var.metrics["docker_storage_dev_size"]}"
+    volume_type = "gp2"
+    delete_on_termination = true
+  }
+  ebs_block_device {
     device_name = "${var.metrics["data_dev"]}"
     volume_size = "${var.metrics["data_dev_size"]}"
+    volume_type = "gp2"
+    delete_on_termination = true
+  }
+  ebs_block_device {
+    device_name = "${var.metrics["persist_dev"]}"
+    volume_size = "${var.metrics["persist_dev_size"]}"
     volume_type = "gp2"
     delete_on_termination = true
   }
@@ -113,20 +114,12 @@ resource "aws_instance" "metrics" {
 
   provisioner "remote-exec" {
     inline = [
-      "sudo mkfs.xfs ${var.metrics["data_dev"]}",
-      "sudo bash -c \"echo ${lookup(var.metrics, "data_dev_mount", var.metrics["data_dev"])} ${var.metrics["data"]} auto defaults,nofail,comment=terraform 0 2 >> /etc/fstab\"",
-      "sudo mkdir -p ${var.metrics["data"]}",
-      "sudo mount ${var.metrics["data"]}",
-      "sudo chown -R ops:ops ${var.metrics["data"]}",
-      "sudo systemctl stop elasticsearch",
-      "sudo systemctl stop redis",
-      "sudo mkdir -p ${var.metrics["data"]}/var/lib",
-      "sudo mv /var/lib/elasticsearch ${var.metrics["data"]}/var/lib/",
-      "sudo ln -sf ${var.metrics["data"]}/var/lib/elasticsearch /var/lib/elasticsearch",
-      "sudo mv /var/lib/redis ${var.metrics["data"]}/var/lib/",
-      "sudo ln -sf ${var.metrics["data"]}/var/lib/redis /var/lib/redis",
-      "sudo systemctl start elasticsearch",
-      "sudo systemctl start redis"
+      "sudo mkfs.xfs ${var.metrics["persist_dev"]}",
+      "sudo bash -c \"echo ${lookup(var.metrics, "persist_dev_mount", var.metrics["persist_dev"])} ${var.metrics["persist"]} auto defaults,nofail,comment=terraform 0 2 >> /etc/fstab\"",
+      "sudo mkdir -p ${var.metrics["persist"]}",
+      "sudo mount ${var.metrics["persist"]}",
+      "sudo chown -R ops:ops ${var.metrics["persist"]}",
+      "sudo mkdir -p ${var.metrics["persist"]}/var/lib"
     ]
   }
 }
@@ -145,7 +138,7 @@ output "metrics_pub_ip" {
 ######################
 
 resource "aws_instance" "grq" {
-  ami                    = "${var.grq["ami"]}"
+  ami                    = "${var.ami}"
   instance_type          = "${var.grq["instance_type"]}"
   key_name               = "${var.key_name}"
   availability_zone      = "${var.az}"
@@ -155,8 +148,20 @@ resource "aws_instance" "grq" {
   subnet_id              = "${var.subnet_id}"
   vpc_security_group_ids = "${var.vpc_security_group_ids}"
   ebs_block_device {
+    device_name = "${var.grq["docker_storage_dev"]}"
+    volume_size = "${var.grq["docker_storage_dev_size"]}"
+    volume_type = "gp2"
+    delete_on_termination = true
+  }
+  ebs_block_device {
     device_name = "${var.grq["data_dev"]}"
     volume_size = "${var.grq["data_dev_size"]}"
+    volume_type = "gp2"
+    delete_on_termination = true
+  }
+  ebs_block_device {
+    device_name = "${var.grq["persist_dev"]}"
+    volume_size = "${var.grq["persist_dev_size"]}"
     volume_type = "gp2"
     delete_on_termination = true
   }
@@ -173,18 +178,12 @@ resource "aws_instance" "grq" {
 
   provisioner "remote-exec" {
     inline = [
-      "sudo mkfs.xfs ${var.grq["data_dev"]}",
-      "sudo bash -c \"echo ${lookup(var.grq, "data_dev_mount", var.grq["data_dev"])} ${var.grq["data"]} auto defaults,nofail,comment=terraform 0 2 >> /etc/fstab\"",
-      "sudo mkdir -p ${var.grq["data"]}",
-      "sudo mount ${var.grq["data"]}",
-      "sudo chown -R ops:ops ${var.grq["data"]}",
-      "sudo systemctl stop elasticsearch",
-      "sudo systemctl stop redis",
-      "sudo mkdir -p ${var.grq["data"]}/var/lib",
-      "sudo mv /var/lib/redis ${var.grq["data"]}/var/lib/",
-      "sudo ln -sf ${var.grq["data"]}/var/lib/redis /var/lib/redis",
-      "sudo systemctl start redis",
-      "(sudo mv /var/lib/elasticsearch ${var.grq["data"]}/var/lib/ && sudo ln -sf ${var.grq["data"]}/var/lib/elasticsearch /var/lib/elasticsearch && sudo systemctl start elasticsearch) &"
+      "sudo mkfs.xfs ${var.grq["persist_dev"]}",
+      "sudo bash -c \"echo ${lookup(var.grq, "persist_dev_mount", var.grq["persist_dev"])} ${var.grq["persist"]} auto defaults,nofail,comment=terraform 0 2 >> /etc/fstab\"",
+      "sudo mkdir -p ${var.grq["persist"]}",
+      "sudo mount ${var.grq["persist"]}",
+      "sudo chown -R ops:ops ${var.grq["persist"]}",
+      "sudo mkdir -p ${var.grq["persist"]}/var/lib"
     ]
   }
 }
@@ -203,7 +202,7 @@ output "grq_pub_ip" {
 ######################
 
 resource "aws_instance" "factotum" {
-  ami                    = "${var.factotum["ami"]}"
+  ami                    = "${var.ami}"
   instance_type          = "${var.factotum["instance_type"]}"
   key_name               = "${var.key_name}"
   availability_zone      = "${var.az}"
@@ -212,18 +211,6 @@ resource "aws_instance" "factotum" {
                            }
   subnet_id              = "${var.subnet_id}"
   vpc_security_group_ids = "${var.vpc_security_group_ids}"
-  ebs_block_device {
-    device_name = "${var.factotum["docker_storage_dev"]}"
-    volume_size = "${var.factotum["docker_storage_dev_size"]}"
-    volume_type = "gp2"
-    delete_on_termination = true
-  }
-  ebs_block_device {
-    device_name = "${var.factotum["data_dev"]}"
-    volume_size = "${var.factotum["data_dev_size"]}"
-    volume_type = "gp2"
-    delete_on_termination = true
-  }
 
   connection {
     type     = "ssh"
@@ -233,21 +220,6 @@ resource "aws_instance" "factotum" {
 
   provisioner "local-exec" {
     command = "echo ${aws_instance.factotum.private_ip} > factotum_ip_address.txt"
-  }
-
-  provisioner "remote-exec" {
-    inline = [
-      "cd /tmp",
-      "git clone https://github.com/pymonger/docker-ephemeral-lvm.git",
-      "cd docker-ephemeral-lvm/docker-ephemeral-lvm.d",
-      "sudo bash docker-ephemeral-lvm.sh.no_encrypt_data",
-      "sudo systemctl stop redis",
-      "sudo mkdir -p ${var.factotum["data"]}/var/lib",
-      "sudo mv /var/lib/redis ${var.factotum["data"]}/var/lib/",
-      "sudo ln -sf ${var.factotum["data"]}/var/lib/redis /var/lib/redis",
-      "sudo systemctl start redis",
-      "sudo bash -c \"echo ${lookup(var.factotum, "data_dev_mount", var.factotum["data_dev"])} ${var.factotum["data"]} auto defaults,nofail,comment=terraform 0 2 >> /etc/fstab\""
-    ]
   }
 }
 
@@ -265,7 +237,7 @@ output "factotum_pub_ip" {
 ######################
 
 resource "aws_instance" "ci" {
-  ami                    = "${var.ci["ami"]}"
+  ami                    = "${var.ami}"
   instance_type          = "${var.ci["instance_type"]}"
   key_name               = "${var.key_name}"
   availability_zone      = "${var.az}"
@@ -274,18 +246,6 @@ resource "aws_instance" "ci" {
                            }
   subnet_id              = "${var.subnet_id}"
   vpc_security_group_ids = "${var.vpc_security_group_ids}"
-  ebs_block_device {
-    device_name = "${var.ci["docker_storage_dev"]}"
-    volume_size = "${var.ci["docker_storage_dev_size"]}"
-    volume_type = "gp2"
-    delete_on_termination = true
-  }
-  ebs_block_device {
-    device_name = "${var.ci["data_dev"]}"
-    volume_size = "${var.ci["data_dev_size"]}"
-    volume_type = "gp2"
-    delete_on_termination = true
-  }
 
   connection {
     type     = "ssh"
@@ -295,16 +255,6 @@ resource "aws_instance" "ci" {
 
   provisioner "local-exec" {
     command = "echo ${aws_instance.ci.private_ip} > ci_ip_address.txt"
-  }
-
-  provisioner "remote-exec" {
-    inline = [
-      "cd /tmp",
-      "git clone https://github.com/pymonger/docker-ephemeral-lvm.git",
-      "cd docker-ephemeral-lvm/docker-ephemeral-lvm.d",
-      "sudo bash docker-ephemeral-lvm.sh.no_encrypt_data",
-      "sudo bash -c \"echo ${lookup(var.ci, "data_dev_mount", var.ci["data_dev"])} ${var.ci["data"]} auto defaults,nofail,comment=terraform 0 2 >> /etc/fstab\""
-    ]
   }
 }
 
@@ -322,7 +272,7 @@ output "ci_pub_ip" {
 ######################
 
 resource "aws_instance" "autoscale" {
-  ami                    = "${var.autoscale["ami"]}"
+  ami                    = "${var.ami}"
   instance_type          = "${var.autoscale["instance_type"]}"
   key_name               = "${var.key_name}"
   availability_zone      = "${var.az}"
@@ -331,18 +281,6 @@ resource "aws_instance" "autoscale" {
                            }
   subnet_id              = "${var.subnet_id}"
   vpc_security_group_ids = "${var.vpc_security_group_ids}"
-  ebs_block_device {
-    device_name = "${var.autoscale["docker_storage_dev"]}"
-    volume_size = "${var.autoscale["docker_storage_dev_size"]}"
-    volume_type = "gp2"
-    delete_on_termination = true
-  }
-  ebs_block_device {
-    device_name = "${var.autoscale["data_dev"]}"
-    volume_size = "${var.autoscale["data_dev_size"]}"
-    volume_type = "gp2"
-    delete_on_termination = true
-  }
 
   connection {
     type     = "ssh"
@@ -352,16 +290,6 @@ resource "aws_instance" "autoscale" {
 
   provisioner "local-exec" {
     command = "echo ${aws_instance.autoscale.private_ip} > autoscale_ip_address.txt"
-  }
-
-  provisioner "remote-exec" {
-    inline = [
-      "cd /tmp",
-      "git clone https://github.com/pymonger/docker-ephemeral-lvm.git",
-      "cd docker-ephemeral-lvm/docker-ephemeral-lvm.d",
-      "sudo bash docker-ephemeral-lvm.sh.no_encrypt_data",
-      "sudo bash -c \"echo ${lookup(var.autoscale, "data_dev_mount", var.autoscale["data_dev"])} ${var.autoscale["data"]} auto defaults,nofail,comment=terraform 0 2 >> /etc/fstab\""
-    ]
   }
 }
 
