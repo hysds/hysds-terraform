@@ -87,8 +87,8 @@ resource "aws_instance" "mozart" {
       "mkdir -p ~/mozart/ops",
       "bash -c \"echo >> ~/.bash_profile\"",
       "bash -c \"echo '# source virtualenv' >> ~/.bash_profile\"",
-      "bash -c \"echo 'export MOZART_DIR=$HOME/mozart' >> ~/.bash_profile\"",
-      "bash -c \"echo 'source $MOZART_DIR/bin/activate' >> ~/.bash_profile\""
+      "bash -c \"echo 'export MOZART_DIR=$$HOME/mozart' >> ~/.bash_profile\"",
+      "bash -c \"echo 'source $$MOZART_DIR/bin/activate' >> ~/.bash_profile\""
     ]
   }
 
@@ -207,8 +207,8 @@ resource "aws_instance" "metrics" {
       "mkdir -p ~/metrics/ops",
       "bash -c \"echo >> ~/.bash_profile\"",
       "bash -c \"echo '# source virtualenv' >> ~/.bash_profile\"",
-      "bash -c \"echo 'export METRICS_DIR=$HOME/metrics' >> ~/.bash_profile\"",
-      "bash -c \"echo 'source $METRICS_DIR/bin/activate' >> ~/.bash_profile\""
+      "bash -c \"echo 'export METRICS_DIR=$$HOME/metrics' >> ~/.bash_profile\"",
+      "bash -c \"echo 'source $$METRICS_DIR/bin/activate' >> ~/.bash_profile\""
     ]
   }
 }
@@ -298,8 +298,8 @@ resource "aws_instance" "grq" {
       "mkdir -p ~/sciflo/ops",
       "bash -c \"echo >> ~/.bash_profile\"",
       "bash -c \"echo '# source virtualenv' >> ~/.bash_profile\"",
-      "bash -c \"echo 'export SCIFLO_DIR=$HOME/sciflo' >> ~/.bash_profile\"",
-      "bash -c \"echo 'source $SCIFLO_DIR/bin/activate' >> ~/.bash_profile\""
+      "bash -c \"echo 'export SCIFLO_DIR=$$HOME/sciflo' >> ~/.bash_profile\"",
+      "bash -c \"echo 'source $$SCIFLO_DIR/bin/activate' >> ~/.bash_profile\""
     ]
   }
 }
@@ -365,8 +365,8 @@ resource "aws_instance" "factotum" {
       "mkdir -p ~/verdi/ops",
       "bash -c \"echo >> ~/.bash_profile\"",
       "bash -c \"echo '# source virtualenv' >> ~/.bash_profile\"",
-      "bash -c \"echo 'export VERDI_DIR=$HOME/verdi' >> ~/.bash_profile\"",
-      "bash -c \"echo 'source $VERDI_DIR/bin/activate' >> ~/.bash_profile\""
+      "bash -c \"echo 'export VERDI_DIR=$$HOME/verdi' >> ~/.bash_profile\"",
+      "bash -c \"echo 'source $$VERDI_DIR/bin/activate' >> ~/.bash_profile\""
     ]
   }
 }
@@ -432,8 +432,8 @@ resource "aws_instance" "ci" {
       "mkdir -p ~/verdi/ops",
       "bash -c \"echo >> ~/.bash_profile\"",
       "bash -c \"echo '# source virtualenv' >> ~/.bash_profile\"",
-      "bash -c \"echo 'export VERDI_DIR=$HOME/verdi' >> ~/.bash_profile\"",
-      "bash -c \"echo 'source $VERDI_DIR/bin/activate' >> ~/.bash_profile\""
+      "bash -c \"echo 'export VERDI_DIR=$$HOME/verdi' >> ~/.bash_profile\"",
+      "bash -c \"echo 'source $$VERDI_DIR/bin/activate' >> ~/.bash_profile\""
     ]
   }
 }
@@ -499,8 +499,8 @@ resource "aws_instance" "autoscale" {
       "mkdir -p ~/verdi/ops",
       "bash -c \"echo >> ~/.bash_profile\"",
       "bash -c \"echo '# source virtualenv' >> ~/.bash_profile\"",
-      "bash -c \"echo 'export VERDI_DIR=$HOME/verdi' >> ~/.bash_profile\"",
-      "bash -c \"echo 'source $VERDI_DIR/bin/activate' >> ~/.bash_profile\""
+      "bash -c \"echo 'export VERDI_DIR=$$HOME/verdi' >> ~/.bash_profile\"",
+      "bash -c \"echo 'source $$VERDI_DIR/bin/activate' >> ~/.bash_profile\""
     ]
   }
 }
