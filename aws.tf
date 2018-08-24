@@ -52,8 +52,14 @@ resource "aws_instance" "mozart" {
     command = "echo ${aws_instance.mozart.private_ip} > mozart_ip_address.txt"
   }
 
+  provisioner "file" {
+    source      = "${file(var.private_key_file)}"
+    destination = ".ssh/${basename(var.private_key_file)}"
+  }
+
   provisioner "remote-exec" {
     inline = [
+      "chmod 600 ~/.ssh/${basename(var.private_key_file)}",
       "sudo yum install -y awscli",
       "sudo mkfs.xfs ${var.mozart["persist_dev"]}",
       "sudo bash -c \"echo ${lookup(var.mozart, "persist_dev_mount", var.mozart["persist_dev"])} ${var.mozart["persist"]} auto defaults,nofail,comment=terraform 0 2 >> /etc/fstab\"",
@@ -70,7 +76,36 @@ resource "aws_instance" "mozart" {
       "chmod 600 ~/.aws/credentials",
       "bash -c \"echo [default] > ~/.aws/config\"",
       "bash -c \"echo region = ${var.region} >> ~/.aws/config\"",
-      "chmod 600 ~/.aws/config"
+      "chmod 600 ~/.aws/config",
+    ]
+  }
+
+  provisioner "remote-exec" {
+    inline = [
+      "bash -c \"echo export MOZART_PVT_IP=${aws_instance.mozart.private_ip} > cluster_env.sh\"",
+      "bash -c \"echo export MOZART_PUB_IP=${aws_instance.mozart.public_ip} >> cluster_env.sh\"",
+      "bash -c \"echo export MOZART_RABBIT_PVT_IP=${aws_instance.mozart.private_ip} >> cluster_env.sh\"",
+      "bash -c \"echo export MOZART_RABBIT_PUB_IP=${aws_instance.mozart.public_ip} >> cluster_env.sh\"",
+      "bash -c \"echo export MOZART_REDIS_PVT_IP=${aws_instance.mozart.private_ip} >> cluster_env.sh\"",
+      "bash -c \"echo export MOZART_REDIS_PUB_IP=${aws_instance.mozart.public_ip} >> cluster_env.sh\"",
+      "bash -c \"echo export MOZART_ES_PVT_IP=${aws_instance.mozart.private_ip} >> cluster_env.sh\"",
+      "bash -c \"echo export MOZART_ES_PUB_IP=${aws_instance.mozart.public_ip} >> cluster_env.sh\"",
+      "bash -c \"echo export METRICS_PVT_IP=${aws_instance.metrics.private_ip} >> cluster_env.sh\"",
+      "bash -c \"echo export METRICS_PUB_IP=${aws_instance.metrics.public_ip} >> cluster_env.sh\"",
+      "bash -c \"echo export METRICS_REDIS_PVT_IP=${aws_instance.metrics.private_ip} >> cluster_env.sh\"",
+      "bash -c \"echo export METRICS_REDIS_PUB_IP=${aws_instance.metrics.public_ip} >> cluster_env.sh\"",
+      "bash -c \"echo export METRICS_ES_PVT_IP=${aws_instance.metrics.private_ip} >> cluster_env.sh\"",
+      "bash -c \"echo export METRICS_ES_PUB_IP=${aws_instance.metrics.public_ip} >> cluster_env.sh\"",
+      "bash -c \"echo export GRQ_PVT_IP=${aws_instance.grq.private_ip} >> cluster_env.sh\"",
+      "bash -c \"echo export GRQ_PUB_IP=${aws_instance.grq.public_ip} >> cluster_env.sh\"",
+      "bash -c \"echo export GRQ_ES_PVT_IP=${aws_instance.grq.private_ip} >> cluster_env.sh\"",
+      "bash -c \"echo export GRQ_ES_PUB_IP=${aws_instance.grq.public_ip} >> cluster_env.sh\"",
+      "bash -c \"echo export FACTOTUM_PVT_IP=${aws_instance.factotum.private_ip} >> cluster_env.sh\"",
+      "bash -c \"echo export FACTOTUM_PUB_IP=${aws_instance.factotum.public_ip} >> cluster_env.sh\"",
+      "bash -c \"echo export CI_PVT_IP=${aws_instance.ci.private_ip} >> cluster_env.sh\"",
+      "bash -c \"echo export CI_PUB_IP=${aws_instance.ci.public_ip} >> cluster_env.sh\"",
+      "bash -c \"echo export VERDI_PVT_IP=${aws_instance.ci.private_ip} >> cluster_env.sh\"",
+      "bash -c \"echo export VERDI_PUB_IP=${aws_instance.ci.public_ip} >> cluster_env.sh\""
     ]
   }
 }
