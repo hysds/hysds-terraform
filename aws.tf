@@ -1,7 +1,7 @@
 provider "aws" {
   shared_credentials_file = "${var.shared_credentials_file}"
   region                  = "${var.region}"
-  profile              = "${var.profile}"
+  profile                 = "${var.profile}"
 }
 
 
@@ -19,6 +19,10 @@ resource "aws_instance" "mozart" {
                            }
   subnet_id              = "${var.subnet_id}"
   vpc_security_group_ids = "${var.vpc_security_group_ids}"
+  root_block_device {
+    volume_type = "gp2"
+    delete_on_termination = true
+  }
   ebs_block_device {
     device_name = "${var.mozart["docker_storage_dev"]}"
     volume_size = "${var.mozart["docker_storage_dev_size"]}"
@@ -50,12 +54,23 @@ resource "aws_instance" "mozart" {
 
   provisioner "remote-exec" {
     inline = [
+      "sudo pip install -y awscli",
       "sudo mkfs.xfs ${var.mozart["persist_dev"]}",
       "sudo bash -c \"echo ${lookup(var.mozart, "persist_dev_mount", var.mozart["persist_dev"])} ${var.mozart["persist"]} auto defaults,nofail,comment=terraform 0 2 >> /etc/fstab\"",
       "sudo mkdir -p ${var.mozart["persist"]}",
       "sudo mount ${var.mozart["persist"]}",
       "sudo chown -R ops:ops ${var.mozart["persist"]}",
-      "sudo mkdir -p ${var.mozart["persist"]}/var/lib"
+      "sudo mkdir -p ${var.mozart["persist"]}/var/lib",
+      "mkdir -p ~/.aws",
+      "chmod 700 ~/.aws",
+      "bash -c \"echo [default] > ~/.aws/credentials\"",
+      "bash -c \"echo aws_access_key_id = ${var.access_key} >> ~/.aws/credentials\"",
+      "bash -c \"echo aws_secret_access_key = ${var.secret_key} >> ~/.aws/credentials\"",
+      "bash -c \"echo region = ${var.region} >> ~/.aws/credentials\"",
+      "chmod 600 ~/.aws/credentials",
+      "bash -c \"echo [default] > ~/.aws/config\"",
+      "bash -c \"echo region = ${var.region} >> ~/.aws/config\"",
+      "chmod 600 ~/.aws/config"
     ]
   }
 }
@@ -83,6 +98,10 @@ resource "aws_instance" "metrics" {
                            }
   subnet_id              = "${var.subnet_id}"
   vpc_security_group_ids = "${var.vpc_security_group_ids}"
+  root_block_device {
+    volume_type = "gp2"
+    delete_on_termination = true
+  }
   ebs_block_device {
     device_name = "${var.metrics["docker_storage_dev"]}"
     volume_size = "${var.metrics["docker_storage_dev_size"]}"
@@ -114,12 +133,23 @@ resource "aws_instance" "metrics" {
 
   provisioner "remote-exec" {
     inline = [
+      "sudo pip install -y awscli",
       "sudo mkfs.xfs ${var.metrics["persist_dev"]}",
       "sudo bash -c \"echo ${lookup(var.metrics, "persist_dev_mount", var.metrics["persist_dev"])} ${var.metrics["persist"]} auto defaults,nofail,comment=terraform 0 2 >> /etc/fstab\"",
       "sudo mkdir -p ${var.metrics["persist"]}",
       "sudo mount ${var.metrics["persist"]}",
       "sudo chown -R ops:ops ${var.metrics["persist"]}",
-      "sudo mkdir -p ${var.metrics["persist"]}/var/lib"
+      "sudo mkdir -p ${var.metrics["persist"]}/var/lib",
+      "mkdir -p ~/.aws",
+      "chmod 700 ~/.aws",
+      "bash -c \"echo [default] > ~/.aws/credentials\"",
+      "bash -c \"echo aws_access_key_id = ${var.access_key} >> ~/.aws/credentials\"",
+      "bash -c \"echo aws_secret_access_key = ${var.secret_key} >> ~/.aws/credentials\"",
+      "bash -c \"echo region = ${var.region} >> ~/.aws/credentials\"",
+      "chmod 600 ~/.aws/credentials",
+      "bash -c \"echo [default] > ~/.aws/config\"",
+      "bash -c \"echo region = ${var.region} >> ~/.aws/config\"",
+      "chmod 600 ~/.aws/config"
     ]
   }
 }
@@ -147,6 +177,10 @@ resource "aws_instance" "grq" {
                            }
   subnet_id              = "${var.subnet_id}"
   vpc_security_group_ids = "${var.vpc_security_group_ids}"
+  root_block_device {
+    volume_type = "gp2"
+    delete_on_termination = true
+  }
   ebs_block_device {
     device_name = "${var.grq["docker_storage_dev"]}"
     volume_size = "${var.grq["docker_storage_dev_size"]}"
@@ -178,12 +212,23 @@ resource "aws_instance" "grq" {
 
   provisioner "remote-exec" {
     inline = [
+      "sudo pip install -y awscli",
       "sudo mkfs.xfs ${var.grq["persist_dev"]}",
       "sudo bash -c \"echo ${lookup(var.grq, "persist_dev_mount", var.grq["persist_dev"])} ${var.grq["persist"]} auto defaults,nofail,comment=terraform 0 2 >> /etc/fstab\"",
       "sudo mkdir -p ${var.grq["persist"]}",
       "sudo mount ${var.grq["persist"]}",
       "sudo chown -R ops:ops ${var.grq["persist"]}",
-      "sudo mkdir -p ${var.grq["persist"]}/var/lib"
+      "sudo mkdir -p ${var.grq["persist"]}/var/lib",
+      "mkdir -p ~/.aws",
+      "chmod 700 ~/.aws",
+      "bash -c \"echo [default] > ~/.aws/credentials\"",
+      "bash -c \"echo aws_access_key_id = ${var.access_key} >> ~/.aws/credentials\"",
+      "bash -c \"echo aws_secret_access_key = ${var.secret_key} >> ~/.aws/credentials\"",
+      "bash -c \"echo region = ${var.region} >> ~/.aws/credentials\"",
+      "chmod 600 ~/.aws/credentials",
+      "bash -c \"echo [default] > ~/.aws/config\"",
+      "bash -c \"echo region = ${var.region} >> ~/.aws/config\"",
+      "chmod 600 ~/.aws/config"
     ]
   }
 }
@@ -211,6 +256,10 @@ resource "aws_instance" "factotum" {
                            }
   subnet_id              = "${var.subnet_id}"
   vpc_security_group_ids = "${var.vpc_security_group_ids}"
+  root_block_device {
+    volume_type = "gp2"
+    delete_on_termination = true
+  }
 
   connection {
     type     = "ssh"
@@ -220,6 +269,22 @@ resource "aws_instance" "factotum" {
 
   provisioner "local-exec" {
     command = "echo ${aws_instance.factotum.private_ip} > factotum_ip_address.txt"
+  }
+
+  provisioner "remote-exec" {
+    inline = [
+      "sudo pip install -y awscli",
+      "mkdir -p ~/.aws",
+      "chmod 700 ~/.aws",
+      "bash -c \"echo [default] > ~/.aws/credentials\"",
+      "bash -c \"echo aws_access_key_id = ${var.access_key} >> ~/.aws/credentials\"",
+      "bash -c \"echo aws_secret_access_key = ${var.secret_key} >> ~/.aws/credentials\"",
+      "bash -c \"echo region = ${var.region} >> ~/.aws/credentials\"",
+      "chmod 600 ~/.aws/credentials",
+      "bash -c \"echo [default] > ~/.aws/config\"",
+      "bash -c \"echo region = ${var.region} >> ~/.aws/config\"",
+      "chmod 600 ~/.aws/config"
+    ]
   }
 }
 
@@ -246,6 +311,10 @@ resource "aws_instance" "ci" {
                            }
   subnet_id              = "${var.subnet_id}"
   vpc_security_group_ids = "${var.vpc_security_group_ids}"
+  root_block_device {
+    volume_type = "gp2"
+    delete_on_termination = true
+  }
 
   connection {
     type     = "ssh"
@@ -255,6 +324,22 @@ resource "aws_instance" "ci" {
 
   provisioner "local-exec" {
     command = "echo ${aws_instance.ci.private_ip} > ci_ip_address.txt"
+  }
+
+  provisioner "remote-exec" {
+    inline = [
+      "sudo pip install -y awscli",
+      "mkdir -p ~/.aws",
+      "chmod 700 ~/.aws",
+      "bash -c \"echo [default] > ~/.aws/credentials\"",
+      "bash -c \"echo aws_access_key_id = ${var.access_key} >> ~/.aws/credentials\"",
+      "bash -c \"echo aws_secret_access_key = ${var.secret_key} >> ~/.aws/credentials\"",
+      "bash -c \"echo region = ${var.region} >> ~/.aws/credentials\"",
+      "chmod 600 ~/.aws/credentials",
+      "bash -c \"echo [default] > ~/.aws/config\"",
+      "bash -c \"echo region = ${var.region} >> ~/.aws/config\"",
+      "chmod 600 ~/.aws/config"
+    ]
   }
 }
 
@@ -281,6 +366,10 @@ resource "aws_instance" "autoscale" {
                            }
   subnet_id              = "${var.subnet_id}"
   vpc_security_group_ids = "${var.vpc_security_group_ids}"
+  root_block_device {
+    volume_type = "gp2"
+    delete_on_termination = true
+  }
 
   connection {
     type     = "ssh"
@@ -290,6 +379,22 @@ resource "aws_instance" "autoscale" {
 
   provisioner "local-exec" {
     command = "echo ${aws_instance.autoscale.private_ip} > autoscale_ip_address.txt"
+  }
+
+  provisioner "remote-exec" {
+    inline = [
+      "sudo pip install -y awscli",
+      "mkdir -p ~/.aws",
+      "chmod 700 ~/.aws",
+      "bash -c \"echo [default] > ~/.aws/credentials\"",
+      "bash -c \"echo aws_access_key_id = ${var.access_key} >> ~/.aws/credentials\"",
+      "bash -c \"echo aws_secret_access_key = ${var.secret_key} >> ~/.aws/credentials\"",
+      "bash -c \"echo region = ${var.region} >> ~/.aws/credentials\"",
+      "chmod 600 ~/.aws/credentials",
+      "bash -c \"echo [default] > ~/.aws/config\"",
+      "bash -c \"echo region = ${var.region} >> ~/.aws/config\"",
+      "chmod 600 ~/.aws/config"
+    ]
   }
 }
 

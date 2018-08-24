@@ -2,6 +2,8 @@
 variable "project" {}
 variable "venue" {}
 variable "counter" {}
+variable "access_key" {}
+variable "secret_key" {}
 
 variable "shared_credentials_file" {
   default = "~/.aws/credentials"
@@ -17,6 +19,10 @@ variable "key_name" {
 
 variable "private_key_file" {
   default = "__private_key_file__"
+}
+
+variable "ami" {
+  default = "__ami__"
 }
 
 variable "region" {
@@ -46,14 +52,15 @@ variable "mozart" {
   type = "map"
   default = {
     name = "mozart"
-    ami = "__mozart_ami_id__"
-    instance_type = "r4.2xlarge"
-    data = "/data"
-    data_dev = "/dev/xvdb"
+    instance_type = "r4.xlarge"
+    docker_storage_dev = "/dev/xvdb"
+    docker_storage_dev_size = 50
+    data_dev = "/dev/xvdc"
     data_dev_size = 50
-    data2 = "/data2"
-    data2_dev = "/dev/xvdc"
-    data2_dev_size = 50
+    persist = "/persist"
+    persist_dev = "/dev/xvdd"
+    persist_dev_mount = "/dev/xvdd"
+    persist_dev_size = 100
   }
 }
 
@@ -63,11 +70,15 @@ variable "metrics" {
   type = "map"
   default = {
     name = "metrics"
-    ami = "__metrics_ami_id__"
-    instance_type = "r4.2xlarge"
-    data = "/data"
-    data_dev = "/dev/xvdb"
-    data_dev_size = 100
+    instance_type = "r4.xlarge"
+    docker_storage_dev = "/dev/xvdb"
+    docker_storage_dev_size = 50
+    data_dev = "/dev/xvdc"
+    data_dev_size = 50
+    persist = "/persist"
+    persist_dev = "/dev/xvdd"
+    persist_dev_mount = "/dev/xvdd"
+    persist_dev_size = 100
   }
 }
 
@@ -77,11 +88,15 @@ variable "grq" {
   type = "map"
   default = {
     name = "grq"
-    ami = "__grq_ami_id__"
-    instance_type = "r4.4xlarge"
-    data = "/data"
-    data_dev = "/dev/xvdb"
-    data_dev_size = 100
+    instance_type = "r4.xlarge"
+    docker_storage_dev = "/dev/xvdb"
+    docker_storage_dev_size = 50
+    data_dev = "/dev/xvdc"
+    data_dev_size = 50
+    persist = "/persist"
+    persist_dev = "/dev/xvdd"
+    persist_dev_mount = "/dev/xvdd"
+    persist_dev_size = 100
   }
 }
 
@@ -91,8 +106,7 @@ variable "factotum" {
   type = "map"
   default = {
     name = "factotum"
-    ami = "__factotum_ami_id__"
-    instance_type = "c5.9xlarge"
+    instance_type = "c3.xlarge"
     docker_storage_dev = "/dev/xvdb"
     docker_storage_dev_size = 50
     data = "/data"
@@ -108,8 +122,7 @@ variable "ci" {
   type = "map"
   default = {
     name = "ci"
-    ami = "__ci_ami_id__"
-    instance_type = "c5.4xlarge"
+    instance_type = "c3.2xlarge"
     docker_storage_dev = "/dev/xvdb"
     docker_storage_dev_size = 50
     data = "/data"
@@ -125,7 +138,6 @@ variable "autoscale" {
   type = "map"
   default = {
     name = "autoscale"
-    ami = "__autoscale_ami_id__"
     instance_type = "c5.9xlarge"
     docker_storage_dev = "/dev/xvdb"
     docker_storage_dev_size = 50
