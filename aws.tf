@@ -25,12 +25,6 @@ resource "aws_instance" "mozart" {
     volume_type = "gp2"
     delete_on_termination = true
   }
-  ebs_block_device {
-    device_name = "${var.mozart["data2_dev"]}"
-    volume_size = "${var.mozart["data2_dev_size"]}"
-    volume_type = "gp2"
-    delete_on_termination = true
-  }
 
   connection {
     type     = "ssh"
@@ -49,11 +43,6 @@ resource "aws_instance" "mozart" {
       "sudo mkdir -p ${var.mozart["data"]}",
       "sudo mount ${var.mozart["data"]}",
       "sudo chown -R ops:ops ${var.mozart["data"]}",
-      "sudo mkfs.xfs ${var.mozart["data2_dev"]}",
-      "sudo bash -c \"echo ${lookup(var.mozart, "data2_dev_mount", var.mozart["data2_dev"])} ${var.mozart["data2"]} auto defaults,nofail,comment=terraform 0 2 >> /etc/fstab\"",
-      "sudo mkdir -p ${var.mozart["data2"]}",
-      "sudo mount ${var.mozart["data2"]}",
-      "sudo chown -R ops:ops ${var.mozart["data2"]}",
       "sudo mkdir -p ${var.mozart["data"]}/var/lib",
       "sudo systemctl stop elasticsearch",
       "sudo systemctl stop redis",
@@ -69,6 +58,11 @@ resource "aws_instance" "mozart" {
       "sudo systemctl start rabbitmq-server"
     ]
   }
+}
+
+resource "aws_eip" "mozart" {
+  vpc = true 
+  instance = "${aws_instance.mozart.id}"
 }
 
 output "mozart_pvt_ip" {
@@ -131,6 +125,11 @@ resource "aws_instance" "metrics" {
   }
 }
 
+resource "aws_eip" "metrics" {
+  vpc = true 
+  instance = "${aws_instance.metrics.id}"
+}
+
 output "metrics_pvt_ip" {
   value = "${aws_instance.metrics.private_ip}"
 }
@@ -189,6 +188,11 @@ resource "aws_instance" "grq" {
   }
 }
 
+resource "aws_eip" "grq" {
+  vpc = true 
+  instance = "${aws_instance.grq.id}"
+}
+
 output "grq_pvt_ip" {
   value = "${aws_instance.grq.private_ip}"
 }
@@ -212,17 +216,13 @@ resource "aws_instance" "factotum" {
                            }
   subnet_id              = "${var.subnet_id}"
   vpc_security_group_ids = "${var.vpc_security_group_ids}"
-  ebs_block_device {
-    device_name = "${var.factotum["docker_storage_dev"]}"
-    volume_size = "${var.factotum["docker_storage_dev_size"]}"
-    volume_type = "gp2"
-    delete_on_termination = true
+  ephemeral_block_device {
+    device_name = "${var.ci["docker_storage_dev"]}"
+    virtual_name = "ephemeral0"
   }
-  ebs_block_device {
-    device_name = "${var.factotum["data_dev"]}"
-    volume_size = "${var.factotum["data_dev_size"]}"
-    volume_type = "gp2"
-    delete_on_termination = true
+  ephemeral_block_device {
+    device_name = "${var.ci["data_dev"]}"
+    virtual_name = "ephemeral1"
   }
 
   connection {
@@ -251,6 +251,11 @@ resource "aws_instance" "factotum" {
   }
 }
 
+resource "aws_eip" "factotum" {
+  vpc = true 
+  instance = "${aws_instance.factotum.id}"
+}
+
 output "factotum_pvt_ip" {
   value = "${aws_instance.factotum.private_ip}"
 }
@@ -274,17 +279,13 @@ resource "aws_instance" "ci" {
                            }
   subnet_id              = "${var.subnet_id}"
   vpc_security_group_ids = "${var.vpc_security_group_ids}"
-  ebs_block_device {
+  ephemeral_block_device {
     device_name = "${var.ci["docker_storage_dev"]}"
-    volume_size = "${var.ci["docker_storage_dev_size"]}"
-    volume_type = "gp2"
-    delete_on_termination = true
+    virtual_name = "ephemeral0"
   }
-  ebs_block_device {
+  ephemeral_block_device {
     device_name = "${var.ci["data_dev"]}"
-    volume_size = "${var.ci["data_dev_size"]}"
-    volume_type = "gp2"
-    delete_on_termination = true
+    virtual_name = "ephemeral1"
   }
 
   connection {
@@ -306,6 +307,11 @@ resource "aws_instance" "ci" {
       "sudo bash -c \"echo ${lookup(var.ci, "data_dev_mount", var.ci["data_dev"])} ${var.ci["data"]} auto defaults,nofail,comment=terraform 0 2 >> /etc/fstab\""
     ]
   }
+}
+
+resource "aws_eip" "ci" {
+  vpc = true 
+  instance = "${aws_instance.ci.id}"
 }
 
 output "ci_pvt_ip" {
@@ -331,17 +337,13 @@ resource "aws_instance" "autoscale" {
                            }
   subnet_id              = "${var.subnet_id}"
   vpc_security_group_ids = "${var.vpc_security_group_ids}"
-  ebs_block_device {
-    device_name = "${var.autoscale["docker_storage_dev"]}"
-    volume_size = "${var.autoscale["docker_storage_dev_size"]}"
-    volume_type = "gp2"
-    delete_on_termination = true
+  ephemeral_block_device {
+    device_name = "${var.ci["docker_storage_dev"]}"
+    virtual_name = "ephemeral0"
   }
-  ebs_block_device {
-    device_name = "${var.autoscale["data_dev"]}"
-    volume_size = "${var.autoscale["data_dev_size"]}"
-    volume_type = "gp2"
-    delete_on_termination = true
+  ephemeral_block_device {
+    device_name = "${var.ci["data_dev"]}"
+    virtual_name = "ephemeral1"
   }
 
   connection {
