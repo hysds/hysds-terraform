@@ -8,35 +8,61 @@ variable "shared_credentials_file" {
 }
 
 variable "profile" {
-  default = "default"
+  default = "__aws_profile__"
 }
 
-variable "key_name" {
-  default = "__key_name__"
+variable "key_pair" {
+  default = "__os_key_pair_name__"
 }
 
 variable "private_key_file" {
-  default = "__private_key_file__"
+  default = "__os_pvt_key_path__"
+}
+
+variable "auth_url" {
+  default = "__os_auth_url__"
+}
+
+variable "tenant_name" {
+  default = "__os_tenant_name__"
+}
+
+variable "tenant_id" {
+  default = "__os_tenant_id__"
+}
+
+variable "user_name" {
+  default = "__os_user__"
+}
+
+variable "password" {
+  default = "__os_password__"
 }
 
 variable "region" {
-  default = "__region__"
+  default = "__os_region__"
+}
+
+variable "network" {
+  type = "map"
+  default = {
+    name = "__os_network_name__"
+    uuid = "__os_network_id__"
+  }
 }
 
 variable "az" {
-  default = "__az__"
+  default = "__os_az__"
 }
 
-variable "subnet_id" {
-  default = "__subnet_id__"
+variable "pool" {
+  default = "__os_floating_ip_pool__"
 }
 
-variable "vpc_security_group_ids" {
+variable "security_groups" {
   type = "list"
   default = [
-    "__sg_id1__",
-    "__sg_id2__",
-    "__sg_id3__"
+    "__os_security_group__"
   ]
 }
 
@@ -46,14 +72,13 @@ variable "mozart" {
   type = "map"
   default = {
     name = "mozart"
-    ami = "__mozart_ami_id__"
-    instance_type = "r4.2xlarge"
-    data = "/data"
-    data_dev = "/dev/xvdb"
-    data_dev_size = 50
-    data2 = "/data2"
-    data2_dev = "/dev/xvdc"
-    data2_dev_size = 50
+    image_id = "__os_mozart_image_id__"
+    # r3.4xlarge
+    #flavor_id = "__os_mozart_flavor_id__"
+    # r3.2xlarge
+    flavor_id = "__os_mozart_flavor_id__"
+    docker_storage_size = 50
+    data_size = 100
   }
 }
 
@@ -63,75 +88,61 @@ variable "metrics" {
   type = "map"
   default = {
     name = "metrics"
-    ami = "__metrics_ami_id__"
-    instance_type = "r4.2xlarge"
-    data = "/data"
-    data_dev = "/dev/xvdb"
-    data_dev_size = 100
+    image_id = "__os_metrics_image_id__"
+    # r3.4xlarge
+    #flavor_id = "__os_metrics_flavor_id__"
+    # r3.2xlarge
+    #flavor_id = "__os_metrics_flavor_id__"
+    # m3.xlarge
+    flavor_id = "__os_metrics_flavor_id__"
+    docker_storage_size = 50
+    data_size = 100
   }
 }
-
 
 # grq vars
 variable "grq" {
   type = "map"
   default = {
     name = "grq"
-    ami = "__grq_ami_id__"
-    instance_type = "r4.4xlarge"
-    data = "/data"
-    data_dev = "/dev/xvdb"
-    data_dev_size = 100
+    image_id = "__os_grq_image_id__"
+    # r3.4xlarge
+    #flavor_id = "__os_grq_flavor_id__"
+    # r3.2xlarge
+    flavor_id = "__os_grq_flavor_id__"
+    docker_storage_size = 50
+    data_size = 100
   }
 }
-
 
 # factotum vars
 variable "factotum" {
   type = "map"
   default = {
     name = "factotum"
-    ami = "__factotum_ami_id__"
-    instance_type = "c5.9xlarge"
-    docker_storage_dev = "/dev/xvdb"
-    docker_storage_dev_size = 50
-    data = "/data"
-    data_dev = "/dev/xvdc"
-    data_dev_mount = "/dev/nvme2n1"
-    data_dev_size = 300
+    image_id = "__os_factotum_image_id__"
+    # r3.4xlarge
+    #flavor_id = "__os_factotum_flavor_id__"
+    # r3.2xlarge
+    flavor_id = "__os_factotum_flavor_id__"
+    docker_storage_size = 50
+    data_size = 300
   }
 }
-
 
 # ci vars
 variable "ci" {
   type = "map"
   default = {
     name = "ci"
-    ami = "__ci_ami_id__"
-    instance_type = "c5.4xlarge"
-    docker_storage_dev = "/dev/xvdb"
-    docker_storage_dev_size = 50
-    data = "/data"
-    data_dev = "/dev/xvdc"
-    data_dev_mount = "/dev/nvme2n1"
-    data_dev_size = 100
-  }
-}
-
-
-# autoscale vars
-variable "autoscale" {
-  type = "map"
-  default = {
-    name = "autoscale"
-    ami = "__autoscale_ami_id__"
-    instance_type = "c5.9xlarge"
-    docker_storage_dev = "/dev/xvdb"
-    docker_storage_dev_size = 50
-    data = "/data"
-    data_dev = "/dev/xvdc"
-    data_dev_mount = "/dev/nvme2n1"
-    data_dev_size = 300
+    image_id = "__os_ci_image_id__"
+    # r3.4xlarge
+    #flavor_id = "__os_ci_flavor_id__"
+    # r3.2xlarge
+    #flavor_id = "__os_ci_flavor_id__"
+    # m3.xlarge
+    flavor_id = "__os_ci_flavor_id__"
+    docker_storage_size = 50
+    data_size = 100
   }
 }
